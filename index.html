@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id" data-p="adobe">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pembaca Pasar Microstock</title>
+<style>
+:root{--bg:#eef2f7;--card:#fff;--ink:#14213d;--mute:#5b6b82;--line:#d5dde8;--acc:#0f766e;--accbg:#d9f2ee;--on:#fff;--amber:#9a5b00;--amberbg:#fdecc8;--red:#a61e1e;--redbg:#fbdcdc;--gray:#e6ebf2}
+html[data-p=shutter]{--acc:#5b3fd1;--accbg:#e7e1fb}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1626;--card:#16213a;--ink:#e8eefb;--mute:#9db0cc;--line:#2a3a5c;--acc:#5eead4;--accbg:#12423f;--on:#06201d;--amber:#fbbf24;--amberbg:#4a3510;--red:#fca5a5;--redbg:#4a1d1d;--gray:#22304f}html[data-p=shutter]{--acc:#b4a2ff;--accbg:#2c2559;--on:#14102e}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
+main{max-width:900px;margin:0 auto;padding:18px 14px 60px}
+h1{font:700 1.65rem/1.2 Georgia,serif;margin:6px 0 4px}
+h2{font:700 1.2rem/1.3 Georgia,serif;margin:0 0 4px}
+.sub{color:var(--mute);margin:0 0 16px;max-width:64ch}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.hint{color:var(--mute);font-size:.9rem;margin:0 0 12px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--gray);padding:5px;border-radius:12px;margin-bottom:12px}
+.seg button{background:transparent;color:var(--mute);padding:12px;font-size:1rem}
+.seg button[aria-pressed=true]{background:var(--acc);color:var(--on)}
+.note{padding:10px 12px;border-radius:10px;background:var(--accbg);font-size:.92rem;margin-bottom:6px}
+button,.btn{font:inherit;font-weight:600;border:0;border-radius:9px;padding:10px 16px;background:var(--acc);color:var(--on);cursor:pointer;text-decoration:none;display:inline-block;line-height:1.4}
+button.g,.btn.g{background:var(--gray);color:var(--ink)}
+button:disabled{opacity:.55;cursor:wait}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-width:0;width:100%}
+label{font-size:.88rem;color:var(--mute);display:flex;flex-direction:column;gap:4px}
+label.c{flex-direction:row;align-items:center;gap:8px}label.c input{width:auto}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.g2{grid-template-columns:1fr}}
+.row{padding:11px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:70px 1fr;gap:4px 12px}
+.row:first-child{border-top:0}
+.d{font-weight:700;font-size:.92rem}.d small{display:block;color:var(--mute);font-weight:400}
+.nm{font-weight:600}.id{color:var(--mute);font-size:.88rem}
+.bd{font-size:.78rem;padding:2px 9px;border-radius:99px;font-weight:600;display:inline-block;margin:4px 6px 0 0}
+.b1{background:var(--accbg);color:var(--acc)}.b2{background:var(--amberbg);color:var(--amber)}.b3{background:var(--redbg);color:var(--red)}.b0{background:var(--gray);color:var(--mute)}
+.act{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.act .btn,.act button{padding:6px 12px;font-size:.88rem}
+.act .on{outline:2px solid var(--acc)}
+.imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:10px}
+.imgs figure{margin:0;position:relative;background:var(--gray);border-radius:8px;overflow:hidden}
+.imgs img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.imgs figcaption{font-size:.72rem;padding:3px 6px;color:var(--mute);line-height:1.3;max-height:2.7em;overflow:hidden}
+.imgs .x{position:absolute;top:4px;right:4px;padding:2px 8px;font-size:.85rem;background:#000b;color:#fff}
+.imgs .s{position:absolute;bottom:26px;right:4px;padding:2px 8px;font-size:.78rem;background:#000b;color:#fff}
+#drop{border:2px dashed var(--line);border-radius:12px;padding:16px;text-align:center;color:var(--mute)}
+#drop.over{border-color:var(--acc);background:var(--accbg)}
+#out{margin-top:14px;padding:14px;border:1px dashed var(--line);border-radius:10px;white-space:pre-wrap;word-break:break-word;min-height:56px}
+#out.err,#msg.err{color:var(--red)}
+#msg{font-size:.9rem;min-height:1.3em;margin-top:8px;color:var(--mute)}
+details{margin-bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+summary{font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+<h1>Pembaca Pasar Microstock</h1>
+<p class="sub">Khusus penjual vektor: pilih platform, pilih tema yang mau naik, kumpulkan referensi vektor terlaris, lalu minta Gemini membaca gaya dan celah pasarnya.</p>
+
+<div class="seg" role="group" aria-label="Platform">
+<button id="pa" aria-pressed="true">Adobe Stock</button>
+<button id="ps" aria-pressed="false">Shutterstock</button>
+</div>
+<div class="note" id="pnote"></div>
+
+<details><summary>Pengaturan API key</summary>
+<div class="g2" style="margin-top:12px">
+<label>Gemini API key<input id="gk" type="password" placeholder="AIza..." autocomplete="off"></label>
+<label>Model Gemini<input id="gm"></label>
+<label>Adobe Stock API key (opsional, untuk tarik referensi otomatis)<input id="ak" type="password" autocomplete="off"></label>
+<label class="c" style="align-self:end"><input type="checkbox" id="gr"> Pakai Google Search di Gemini</label>
+</div>
+<p class="hint" style="margin-top:10px">Key disimpan hanya di browser kamu. Adobe API key gratis lewat developer.adobe.com/stock. Browser kadang memblokir panggilan ke Adobe API, kalau gagal pakai screenshot manual.</p>
+</details>
+
+<section>
+<h2>1. Tema yang akan naik</h2>
+<p class="hint">Tenggat online dihitung dari tanggal event. Klik Pilih untuk menjadikannya tema aktif, atau Buka untuk melihat hasil terlaris di platform yang dipilih.</p>
+<label style="margin-bottom:12px">Target online: <b><span id="lv">90</span> hari</b> sebelum event
+<input id="lead" type="range" min="30" max="150" step="10" value="90" style="padding:0"></label>
+<div id="cal"></div>
+<div style="margin-top:10px" id="scanbox"><button class="g" id="scan">Cek jumlah persaingan vektor tiap tema (Adobe API)</button></div>
+</section>
+
+<section>
+<h2>2. Papan referensi: <span id="tn"></span></h2>
+<p class="hint" id="bh"></p>
+<div id="drop">Tempel (Ctrl+V) atau seret gambar ke sini, atau pilih dari galeri:<br>
+<input type="file" id="file" accept="image/*" multiple style="margin-top:10px;max-width:100%;width:auto"></div>
+<div id="msg"></div>
+<div id="adobebox" style="margin-top:12px"><button class="g" id="pull">Tarik top download dari Adobe Stock</button>
+<label style="display:inline-flex;flex-direction:row;gap:6px;align-items:center;margin-left:8px">Jenis
+<select id="ct" style="width:auto"><option value="vector">Vektor</option><option value="illustration">Ilustrasi raster</option><option value="">Semua</option></select></label>
+<div id="api"></div></div>
+<h2 style="margin-top:16px;font-size:1rem">Gambar tersimpan untuk tema ini</h2>
+<div class="imgs" id="board"></div>
+</section>
+
+<section>
+<h2>3. Baca dengan Gemini</h2>
+<p class="hint">Analisis gambar membaca gaya, warna, komposisi, dan celah pasar dari gambar di papan (maksimal 8 terbaru). Hasilnya arah, bukan data penjualan.</p>
+<button id="ai">Analisis gambar referensi</button>
+<button class="g" id="ti" style="margin-left:6px">Ide konsep tanpa gambar</button>
+<button class="g" id="cp" style="margin-left:6px">Salin hasil</button>
+<div id="out">Hasil akan muncul di sini.</div>
+</section>
+</main>
+
+<script>
+var $=function(i){return document.getElementById(i)},DAY=864e5;
+function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+var S=ld("mr_s",{p:"adobe",gk:"",gm:"gemini-2.5-flash",ak:"",gr:true,t:0}),REFS=ld("mr_r",{}),C=ld("mr_c2",{});
+var T=[
+{n:"Thanksgiving",d:"2026-11-26",q:"thanksgiving dinner",i:"meja makan musim gugur, rasa syukur"},
+{n:"Black Friday",d:"2026-11-27",q:"black friday sale",i:"banner diskon, belanja online"},
+{n:"Natal",d:"2026-12-25",q:"christmas",i:"ornamen, hadiah, musim dingin"},
+{n:"Tahun Baru 2027",d:"2027-01-01",q:"new year 2027",i:"hitung mundur, resolusi, kembang api"},
+{n:"Imlek 2027 (Tahun Kambing)",d:"2027-02-06",q:"chinese new year goat",i:"lampion, merah emas, kambing"},
+{n:"Awal Ramadan (perkiraan)",d:"2027-02-08",q:"ramadan kareem",i:"lentera, masjid, buka puasa",a:1},
+{n:"Valentine",d:"2027-02-14",q:"valentines day",i:"hati, romantis, hadiah"},
+{n:"Hari Perempuan Internasional",d:"2027-03-08",q:"international womens day",i:"kesetaraan, perempuan di dunia kerja"},
+{n:"Idul Fitri (perkiraan)",d:"2027-03-09",q:"eid mubarak",i:"ketupat, mudik, halal bihalal",a:1},
+{n:"Paskah",d:"2027-03-28",q:"easter",i:"telur, kelinci, musim semi"},
+{n:"Hari Bumi",d:"2027-04-22",q:"earth day",i:"lingkungan, planet, energi hijau"},
+{n:"Hari Ibu (AS)",d:"2027-05-09",q:"mothers day",i:"ibu dan anak, bunga"},
+{n:"Hari Ayah (AS)",d:"2027-06-20",q:"fathers day",i:"ayah dan anak, hadiah"},
+{n:"Kembali ke sekolah (perkiraan)",d:"2027-08-15",q:"back to school",i:"alat tulis, kelas, belajar online",a:1},
+{n:"Halloween",d:"2027-10-31",q:"halloween",i:"labu, hantu lucu, kostum"},
+{n:"Thanksgiving 2027",d:"2027-11-25",q:"thanksgiving",i:"meja makan, panen"},
+{n:"Evergreen: latar abstrak dan gradasi",q:"abstract gradient background",i:"laku sepanjang tahun"},
+{n:"Evergreen: kerja remote dan wellness",q:"remote work wellness",i:"kerja dari rumah, kesehatan mental"},
+{n:"Evergreen: ikon bisnis dan teknologi",q:"business technology icons",i:"AI, keamanan data, keuangan"},
+{n:"Evergreen: keberlanjutan",q:"sustainability green energy",i:"energi bersih, daur ulang"},
+{n:"Evergreen: pola seamless",q:"seamless pattern",i:"pola berulang untuk kemasan dan tekstil"},
+{n:"Evergreen: set ikon (icon set)",q:"icon set",i:"satu set 6-12 ikon satu gaya, garis atau flat"},
+{n:"Evergreen: elemen infografis",q:"infographic elements",i:"diagram, grafik, langkah proses"},
+{n:"Evergreen: ilustrasi flat orang dan bisnis",q:"flat illustration business people",i:"tim kerja, meeting, startup"},
+{n:"Evergreen: bingkai dan border dekoratif",q:"decorative frame border",i:"undangan, sertifikat, kartu ucapan"}
+];
+var NOTE={adobe:"Adobe Stock: setahu saya mereka menerima karya generative AI dengan label sesuai aturan mereka, dan punya API pencarian resmi untuk menarik referensi top download. Cek aturan terbaru sebelum upload.",
+shutter:"Shutterstock: menurut halaman bantuan resminya, kontributor tidak boleh meng-upload konten hasil AI. Karya harus buatan sendiri (foto, atau vektor yang kamu gambar). Untuk referensi, buka hasil terlaris lalu tempel screenshot ke papan."};
+var PN={adobe:"Adobe Stock",shutter:"Shutterstock"};
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function msg(t,e){$("msg").textContent=t||"";$("msg").className=e?"err":""}
+function link(q){return S.p==="adobe"?"https://stock.adobe.com/search?k="+encodeURIComponent(q)+"&order=nb_downloads&filters%5Bcontent_type%3Avector%5D=1":"https://www.shutterstock.com/search/"+encodeURIComponent(q.replace(/\s+/g,"-"))+"?sort=popular&image_type=vector"}
+function key(){return S.p+"|"+T[S.t].n}
+function setP(p){S.p=p;sv("mr_s",S);document.documentElement.dataset.p=p;$("pa").setAttribute("aria-pressed",p==="adobe");$("ps").setAttribute("aria-pressed",p==="shutter");$("pnote").textContent=NOTE[p];$("adobebox").style.display=$("scanbox").style.display=p==="adobe"?"":"none";$("bh").textContent=p==="adobe"?"Tarik top download otomatis (butuh Adobe API key), atau tempel screenshot hasil terlaris dari "+PN[p]+".":"Buka hasil terlaris di Shutterstock lewat tombol Buka, ambil screenshot, lalu tempel di sini.";$("api").innerHTML="";cal();board()}
+function cal(){
+ var lead=+$("lead").value,now=new Date();now.setHours(0,0,0,0);$("lv").textContent=lead;var h="";
+ T.forEach(function(t,i){
+  var bd="",pct="";
+  if(t.d){var d=new Date(t.d+"T00:00:00"),left=Math.round((d-now)/DAY);if(left<0)return;var dl=Math.round((d-lead*DAY-now)/DAY);
+   bd=dl<0?'<span class="bd b3">Terlambat tahun ini</span>':dl<=30?'<span class="bd b2">Kerjakan sekarang ('+dl+' hari lagi)</span>':'<span class="bd b0">Persiapan ('+dl+' hari lagi)</span>';
+   pct='<div class="d">'+d.toLocaleDateString("id-ID",{day:"numeric",month:"short"})+'<small>'+d.getFullYear()+'</small></div>'}
+  else pct='<div class="d">Evergreen</div>';
+  var c=(S.p==="adobe"&&C[i]!=null)?'<span class="bd b1">'+C[i].toLocaleString("id-ID")+' hasil vektor di Adobe</span>':"";
+  h+='<div class="row">'+pct+'<div><div class="nm">'+t.n+'</div><div class="id">'+t.i+(t.a?" (tanggal perkiraan)":"")+'</div>'+bd+c+'</div><div class="act"><button data-i="'+i+'" class="'+(i===S.t?"":"g")+'">'+(i===S.t?"Tema aktif":"Pilih")+'</button><a class="btn g" target="_blank" rel="noopener" href="'+link(t.q)+'">Buka di '+PN[S.p]+'</a></div></div>';
+ });
+ $("cal").innerHTML=h;$("tn").textContent=T[S.t].n;
+}
+$("cal").addEventListener("click",function(e){var b=e.target.closest("button[data-i]");if(!b)return;S.t=+b.dataset.i;sv("mr_s",S);$("api").innerHTML="";cal();board()});
+$("lead").addEventListener("input",cal);
+$("pa").onclick=function(){setP("adobe")};$("ps").onclick=function(){setP("shutter")};
+function board(){var a=REFS[key()]||[];$("board").innerHTML=a.length?a.map(function(d,i){return'<figure><img alt="Referensi '+(i+1)+'" src="'+d+'"><button class="x" data-x="'+i+'" aria-label="Hapus">x</button></figure>'}).join(""):'<span class="hint">Belum ada gambar untuk tema ini di '+PN[S.p]+'.</span>'}
+$("board").addEventListener("click",function(e){var b=e.target.closest("[data-x]");if(!b)return;REFS[key()].splice(+b.dataset.x,1);sv("mr_r",REFS);board()});
+function store(d){var k=key();(REFS[k]=REFS[k]||[]).push(d);
+ if(sv("mr_r",REFS))msg("Gambar ditambahkan.");else msg("Gambar ditambahkan, tapi browser tidak mau menyimpannya permanen. Gambar hilang kalau halaman ditutup.",1);board()}
+function addFile(f){
+ if(!f||(f.type&&f.type.indexOf("image")!==0))return;
+ var done=function(src,w,h){var r=Math.min(1,640/Math.max(w,h)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(w*r));c.height=Math.max(1,Math.round(h*r));c.getContext("2d").drawImage(src,0,0,c.width,c.height);store(c.toDataURL("image/jpeg",.72))};
+ var viaReader=function(){var fr=new FileReader();
+  fr.onload=function(){var im=new Image();im.onload=function(){done(im,im.width,im.height)};im.onerror=function(){msg("Gambar tidak bisa dibaca. Coba screenshot ulang dalam format PNG atau JPG.",1)};im.src=fr.result};
+  fr.onerror=function(){msg("File tidak bisa dibuka oleh browser.",1)};fr.readAsDataURL(f)};
+ if(window.createImageBitmap)createImageBitmap(f).then(function(b){done(b,b.width,b.height)}).catch(viaReader);else viaReader()}
+$("file").onchange=function(){Array.prototype.forEach.call(this.files,addFile);this.value=""};
+document.addEventListener("paste",function(e){Array.prototype.forEach.call((e.clipboardData||{}).items||[],function(it){if(it.type.indexOf("image")===0)addFile(it.getAsFile())})});
+var dz=$("drop");["dragover","dragenter"].forEach(function(n){dz.addEventListener(n,function(e){e.preventDefault();dz.classList.add("over")})});
+["dragleave","drop"].forEach(function(n){dz.addEventListener(n,function(e){e.preventDefault();dz.classList.remove("over")})});
+dz.addEventListener("drop",function(e){Array.prototype.forEach.call(e.dataTransfer.files,addFile)});
+function adobeUrl(q,limit,ct){
+ var p=new URLSearchParams();p.append("locale","en_US");p.append("search_parameters[words]",q);p.append("search_parameters[limit]",limit);p.append("search_parameters[order]","nb_downloads");
+ if(ct)p.append("search_parameters[filters][content_type:"+ct+"]","1");
+ ["title","thumbnail_url","details_url"].forEach(function(c){p.append("result_columns[]",c)});
+ return"https://stock.adobe.io/Rest/Media/1/Search/Files?"+p.toString()}
+function adobe(q,limit,ct){return fetch(adobeUrl(q,limit,ct),{headers:{"x-api-key":S.ak,"X-Product":"PembacaPasar/1.0"}}).then(function(r){if(!r.ok)throw new Error("Adobe API "+r.status);return r.json()})}
+$("pull").onclick=function(){
+ if(!S.ak){msg("Isi Adobe API key di Pengaturan dulu, atau tempel screenshot manual.",1);return}
+ msg("Menarik data dari Adobe Stock...");
+ adobe(T[S.t].q,12,$("ct").value).then(function(j){
+  msg("Persaingan untuk \""+T[S.t].q+"\": "+(j.nb_results||0).toLocaleString("id-ID")+" hasil. Berikut yang paling banyak diunduh.");
+  $("api").innerHTML='<div class="imgs">'+(j.files||[]).map(function(f,i){return'<figure><a href="'+f.details_url+'" target="_blank" rel="noopener"><img alt="" src="'+f.thumbnail_url+'"></a><button class="s" data-u="'+i+'">Simpan</button><figcaption>'+esc(f.title||"")+'</figcaption></figure>'}).join("")+'</div>';
+  $("api").files=j.files||[];
+ }).catch(function(e){msg("Gagal: "+e.message+". Browser mungkin memblokir panggilan ini, pakai screenshot manual.",1)})};
+$("api").addEventListener("click",function(e){var b=e.target.closest("[data-u]");if(!b)return;var f=$("api").files[+b.dataset.u];
+ fetch(f.thumbnail_url).then(function(r){return r.blob()}).then(addFile).catch(function(){msg("Browser memblokir penyimpanan gambar ini. Klik gambarnya lalu ambil screenshot.",1)})});
+$("scan").onclick=async function(){
+ if(!S.ak){msg("Isi Adobe API key di Pengaturan dulu.",1);return}
+ this.disabled=true;
+ try{for(var i=0;i<T.length;i++){var j=await adobe(T[i].q,1,"vector");C[i]=j.nb_results||0;cal();msg("Mengecek "+(i+1)+"/"+T.length+"...");await new Promise(function(r){setTimeout(r,350)})}sv("mr_c2",C);msg("Selesai. Angka lebih kecil berarti lebih sepi, tapi tetap cek apakah permintaannya ada.")}
+ catch(e){msg("Gagal: "+e.message,1)}
+ this.disabled=false};
+function gem(parts){
+ if(!S.gk)return Promise.reject(new Error("Isi Gemini API key di Pengaturan dulu (gratis di aistudio.google.com)."));
+ var b={contents:[{parts:parts}]};if(S.gr)b.tools=[{google_search:{}}];
+ return fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(S.gm)+":generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":S.gk},body:JSON.stringify(b)})
+ .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error((j.error&&j.error.message)||("Error "+r.status));return j})})
+ .then(function(j){var c=((j.candidates||[])[0]||{}).content,t=c&&c.parts?c.parts.map(function(p){return p.text||""}).join(""):"";if(!t)throw new Error("Jawaban kosong. Coba matikan Google Search atau ganti model.");return t})}
+function ctx(){var t=T[S.t],p=S.p;
+ return"Tanggal hari ini: "+new Date().toISOString().slice(0,10)+". Saya kontributor microstock pemula di "+PN[p]+" yang fokus menjual aset VEKTOR (ilustrasi, ikon, pola, elemen desain yang bisa diedit dan diskalakan). Tema: "+t.n+(t.d?" (hari H "+t.d+")":"")+". Aturan: "+(p==="adobe"?"saran harus cocok untuk Adobe Stock, dan kalau memakai alat generatif AI, ingatkan label AI sesuai aturan Adobe.":"Shutterstock tidak menerima konten hasil AI dari kontributor, jadi semua saran harus untuk karya buatan sendiri (foto atau vektor yang digambar manual), jangan sarankan meng-upload hasil generator AI.")}
+function show(t){$("out").className="";$("out").dataset.raw=t;$("out").innerHTML=esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>")}
+function run(btn,parts){btn.disabled=true;$("out").className="";$("out").textContent="Gemini sedang bekerja...";
+ gem(parts).then(show).catch(function(e){$("out").className="err";$("out").textContent="Gagal: "+e.message}).then(function(){btn.disabled=false})}
+$("ai").onclick=function(){var a=(REFS[key()]||[]).slice(-8);
+ if(!a.length){$("out").className="err";$("out").textContent="Belum ada gambar di papan untuk tema ini. Tambahkan screenshot hasil terlaris dulu.";return}
+ var parts=[{text:ctx()+"\n\nGambar-gambar berikut adalah contoh hasil terlaris atau yang sedang tren untuk tema ini. Analisis dalam bahasa Indonesia: (1) pola visual vektor yang sama (gaya seperti flat, line icon, isometrik, atau gradasi; ketebalan garis; perkiraan palet warna dengan kode hex; komposisi; ruang kosong untuk teks), (2) apa yang menandakan permintaan pembeli, (3) celah yang belum terisi, (4) 5 konsep vektor ORISINAL yang terinspirasi dari pola umum, bukan menyalin karya tertentu, dan sebutkan mana yang cocok dijual sebagai set (misalnya 6-12 elemen satu gaya), (5) 15 keyword bahasa Inggris, (6) perkiraan persaingan rendah/sedang/tinggi dengan alasannya, (7) tips eksekusi untuk pemula. Jujur bahwa ini perkiraan dari contoh yang terbatas."}];
+ a.forEach(function(d){parts.push({inline_data:{mime_type:"image/jpeg",data:d.split(",")[1]}})});run(this,parts)};
+$("ti").onclick=function(){run(this,[{text:ctx()+"\n\nBeri 10 ide konsep VEKTOR yang spesifik dan belum terlalu jenuh. Tiap ide: judul konsep, gaya vektor (flat, line, isometrik, dll) dan palet warna utama, apakah cocok dijual sebagai satu set, alasan bisa laku, 10 keyword bahasa Inggris, perkiraan persaingan, satu tips eksekusi. Akhiri dengan 3 hal yang sebaiknya dihindari. Jawab dalam bahasa Indonesia, sebutkan sumber kalau memakai pencarian."}])};
+$("cp").onclick=function(){var t=$("out").dataset.raw;if(t&&navigator.clipboard)navigator.clipboard.writeText(t)};
+[["gk","gk"],["gm","gm"],["ak","ak"]].forEach(function(x){var el=$(x[0]);el.value=S[x[1]]||"";el.addEventListener("input",function(){S[x[1]]=el.value.trim();sv("mr_s",S)})});
+$("gr").checked=S.gr!==false;$("gr").onchange=function(){S.gr=this.checked;sv("mr_s",S)};
+if(!S.gm)S.gm="gemini-2.5-flash";$("gm").value=S.gm;
+if(S.t>=T.length)S.t=0;setP(S.p);
+</script>
+</body>
+</html>
